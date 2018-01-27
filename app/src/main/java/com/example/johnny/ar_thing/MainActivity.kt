@@ -9,13 +9,23 @@ import com.google.ar.core.Session
 import com.google.ar.core.exceptions.UnavailableApkTooOldException
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
+
+
 
 class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer {
 
     private lateinit var session: Session
+
+    private lateinit var mSubscriptions: CompositeDisposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,5 +81,38 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer {
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onDestroy() {
+        mSubscriptions.clear()
+        super.onDestroy()
+    }
+
+    fun getStrings() {
+        mSubscriptions.add(getApi().searchDrawings("s")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleResponse,this::handleError))
+    }
+
+
+    fun handleResponse(i :Int) {
+
+    }
+
+    private fun handleError(throwable: Throwable) {
+        Log.e("ee", throwable.toString())
+    }
+
+    //making the retrofit object
+    private fun getApi(): Api {
+
+        val rxAdapter = RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io())
+
+        return Retrofit.Builder()
+                .baseUrl("some-url")
+                .addCallAdapterFactory(rxAdapter)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build().create(Api::class.java)
     }
 }

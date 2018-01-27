@@ -5,8 +5,10 @@ import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import com.example.johnny.ar_thing.rendering.BackgroundRenderer
 import com.google.ar.core.Config
 import com.google.ar.core.Session
+import com.google.ar.core.Trackable
 import com.google.ar.core.exceptions.UnavailableApkTooOldException
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException
@@ -15,8 +17,11 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer {
+    private val TAG = MainActivity::class.java.simpleName
 
-    private lateinit var session: Session
+    private var session: Session? = null
+
+    private val backgroundRenderer = BackgroundRenderer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,37 +44,73 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer {
             message = "Please install ARCore"
             exception = e
         } catch (e: UnavailableApkTooOldException) {
-            message = "Please update ARCore";
-            exception = e;
+            message = "Please update ARCore"
+            exception = e
         } catch (e: UnavailableSdkTooOldException) {
-            message = "Please update this app";
-            exception = e;
+            message = "Please update this app"
+            exception = e
         } catch (e: Exception) {
-            message = "This device does not support AR";
-            exception = e;
+            message = "This device does not support AR"
+            exception = e
         }
 
         if (message != null) {
-            Log.e("MainActivity", "Exception creating session", exception)
+            Log.e(TAG, "Exception creating session", exception)
             return
         }
 
         val config = Config(session)
-        if (session.isSupported(config)) {
-            Log.e("MainActivity", "This device does not support AR")
+        if (session?.isSupported(config) != true) {
+            Log.e(TAG, "This device does not support AR")
         }
 
-        session.configure(config)
+        session?.configure(config)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        session?.resume()
+        surface.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        surface.onPause()
+        session?.pause()
     }
 
     override fun onDrawFrame(gl: GL10?) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
+
+        try {
+            val frame = session!!.update()
+            val camera = frame.camera
+
+            backgroundRenderer.draw(frame)
+
+            // If not tracking, don't draw 3d objects.
+            if (camera.trackingState == Trackable.TrackingState.PAUSED) {
+                return
+            }
+
+            // TODO: Draw 3d objects I guess
+        } catch (t: Throwable) {
+            Log.e(TAG, "Exception on the OpenGl thread", t)
+        }
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
+        GLES20.glViewport(0, 0, width, height)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES20.glClearColor(0.1F, 0.1F, 0.1F, 0.1F)
+
+        backgroundRenderer.createOnGlThread(this)
+        if (session != null) {
+            session!!.setCameraTextureName(backgroundRenderer.textureId)
+        }
     }
 }

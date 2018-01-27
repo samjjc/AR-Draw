@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/AR-Thing.iml" filepath="$PROJECT_DIR$/.idea/AR-Thing.iml" />
-      <module fileurl="file://$PROJECT_DIR$/aRBaseLib/aRBaseLib.iml" filepath="$PROJECT_DIR$/aRBaseLib/aRBaseLib.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://C:\Users\derek\StudioProjects\AR-Thing\ar_thing.iml" filepath="C:\Users\derek\StudioProjects\AR-Thing\ar_thing.iml" />
+      <module fileurl="file://$PROJECT_DIR$/arcore/arcore.iml" filepath="$PROJECT_DIR$/arcore/arcore.iml" />
     </modules>
   </component>
 </project>

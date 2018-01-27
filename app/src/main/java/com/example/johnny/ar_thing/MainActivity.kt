@@ -1,5 +1,6 @@
 package com.example.johnny.ar_thing
 
+import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -62,14 +63,13 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer {
     }
 
     override fun onDrawFrame(gl: GL10?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        GLES20.glClearColor(0.1F, 0.1F, 0.1F, 0.1F)
     }
 }

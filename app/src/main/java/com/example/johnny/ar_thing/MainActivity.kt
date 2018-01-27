@@ -15,5 +15,5 @@ class MainActivity : ARActivity() {
 
     override fun supplyFrameLayout(): FrameLayout = frameLayout
 
-    override fun supplyRenderer(): ARRenderer = ARRenderer()
+    override fun supplyRenderer(): ARRenderer = Renderer()
 }

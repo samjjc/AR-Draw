@@ -1,5 +1,12 @@
 package com.example.johnny.ar_thing
 
+import android.annotation.SuppressLint
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.location.Location
+import android.location.LocationListener
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.os.Bundle
@@ -20,7 +27,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer {
+
+class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventListener {
     private val TAG = MainActivity::class.java.simpleName
 
     private var session: Session? = null
@@ -29,6 +37,10 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer {
 
     private val backgroundRenderer = BackgroundRenderer()
     private val pointCloudRenderer = PointCloudRenderer()
+
+    private val sensorManager: SensorManager by lazy { getSystemService(SensorManager::class.java) }
+    private var accelerometerReading = FloatArray(3)
+    private var magnetometerReading = FloatArray(3)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +85,32 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer {
         }
 
         session?.configure(config)
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onStart() {
+        super.onStart()
+
+        PositionHelpers.scheduleLocationUpdates(this, object : LocationListener {
+            override fun onLocationChanged(location: Location?) {
+                this@MainActivity.location.text = "Latitude: ${location?.latitude}, Longitude: ${location?.longitude}"
+            }
+
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+
+            override fun onProviderEnabled(provider: String?) {}
+
+            override fun onProviderDisabled(provider: String?) {}
+        })
+
+        val location = PositionHelpers.getCurrentLocation(this)
+        this@MainActivity.location.text = "Latitude: ${location?.latitude}, Longitude: ${location?.longitude}"
+
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI)
+
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI)
     }
 
     override fun onResume() {
@@ -159,5 +197,28 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer {
         }
 
         pointCloudRenderer.createOnGlThread(this)
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
+        // Do something here if sensor accuracy changes.
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onSensorChanged(event: SensorEvent) {
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            System.arraycopy(event.values, 0, accelerometerReading,
+                    0, accelerometerReading.size)
+        } else if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
+            System.arraycopy(event.values, 0, magnetometerReading,
+                    0, magnetometerReading.size)
+        }
+
+        val rotationMatrix = FloatArray(9)
+        SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)
+
+        val orientationAngles = FloatArray(3)
+        SensorManager.getOrientation(rotationMatrix, orientationAngles)
+
+        bearing.text = "Bearing: ${Math.toDegrees(orientationAngles[0].toDouble())}"
     }
 }

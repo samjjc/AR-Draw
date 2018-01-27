@@ -4,6 +4,7 @@ import android.content.Context
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import com.example.johnny.ar_thing.R
+import com.google.ar.core.Frame
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -29,8 +30,16 @@ class BackgroundRenderer {
 
     private var mQuadPositionParam: Int = 0
     private var mQuadTexCoordParam: Int = 0
-    private var textureId: Int = -1
+    var textureId: Int = -1
+        private set
 
+    /**
+     * Allocates and initializes OpenGL resources needed by the background renderer.  Must be
+     * called on the OpenGL thread, typically in
+     * {@link GLSurfaceView.Renderer#onSurfaceCreated(GL10, EGLConfig)}.
+     *
+     * @param context Needed to access shader source.
+     */
     fun createOnGlThread(context: Context) {
         val textures = IntArray(1)
 
@@ -84,5 +93,55 @@ class BackgroundRenderer {
         mQuadTexCoordParam = GLES20.glGetAttribLocation(mQuadProgram, "a_TexCoord")
 
         ShaderUtil.checkGLError(TAG, "Program parameters")
+    }
+
+    /**
+     * Draws the AR background image.  The image will be drawn such that virtual content rendered
+     * with the matrices provided by {@link com.google.ar.core.Camera#getViewMatrix(float[], int)}
+     * and {@link com.google.ar.core.Camera#getProjectionMatrix(float[], int, float, float)} will
+     * accurately follow static physical objects.
+     * This must be called <b>before</b> drawing virtual content.
+     *
+     * @param frame The last {@code Frame} returned by {@link Session#update()}.
+     */
+    fun draw(frame: Frame) {
+        // If display rotation changed (also includes view size change), we need to re-query the uv
+        // coordinates for the screen rect, as they may have changed as well.
+        if (frame.hasDisplayGeometryChanged()) {
+            frame.transformDisplayUvCoords(quadTexCoord, quadTexCoordTransformed)
+        }
+
+        // No need to test or write depth, the screen quad has arbitrary depth, and is expected
+        // to be drawn first.
+        GLES20.glDisable(GLES20.GL_DEPTH_TEST)
+        GLES20.glDepthMask(false)
+
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
+
+        GLES20.glUseProgram(mQuadProgram)
+
+        // Set the vertex positions.
+        GLES20.glVertexAttribPointer(
+                mQuadPositionParam, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, quadVertices)
+
+        // Set the texture coordinates.
+        GLES20.glVertexAttribPointer(mQuadTexCoordParam, TEXCOORDS_PER_VERTEX,
+                GLES20.GL_FLOAT, false, 0, quadTexCoordTransformed)
+
+        // Enable vertex arrays
+        GLES20.glEnableVertexAttribArray(mQuadPositionParam)
+        GLES20.glEnableVertexAttribArray(mQuadTexCoordParam)
+
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
+
+        // Disable vertex arrays
+        GLES20.glDisableVertexAttribArray(mQuadPositionParam)
+        GLES20.glDisableVertexAttribArray(mQuadTexCoordParam)
+
+        // Restore the depth state for further drawing.
+        GLES20.glDepthMask(true)
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+
+        ShaderUtil.checkGLError(TAG, "Draw")
     }
 }

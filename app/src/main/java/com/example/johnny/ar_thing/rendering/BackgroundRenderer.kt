@@ -23,13 +23,16 @@ class BackgroundRenderer {
     private lateinit var quadTexCoord: FloatBuffer
     private lateinit var quadTexCoordTransformed: FloatBuffer
 
-    private val QUAD_COORDS = floatArrayOf(-1.0f, -1.0f, 0.0f, -1.0f, +1.0f, 0.0f, +1.0f, -1.0f, 0.0f, +1.0f, +1.0f, 0.0f)
+    private val QUAD_COORDS = floatArrayOf(-1.0f, -1.0f, 0.0f,
+                                           -1.0f, +1.0f, 0.0f,
+                                           +1.0f, -1.0f, 0.0f,
+                                           +1.0f, +1.0f, 0.0f)
     private val QUAD_TEXCOORDS = floatArrayOf(0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f)
 
-    private var mQuadProgram: Int = 0
+    private var quadProgram: Int = 0
 
-    private var mQuadPositionParam: Int = 0
-    private var mQuadTexCoordParam: Int = 0
+    private var quadPositionParam: Int = 0
+    private var quadTexCoordParam: Int = 0
     var textureId: Int = -1
         private set
 
@@ -81,16 +84,16 @@ class BackgroundRenderer {
         val fragmentShader = ShaderUtil.loadGLShader(TAG, context,
                 GLES20.GL_FRAGMENT_SHADER, R.raw.screenquad_fragment_oes)
 
-        mQuadProgram = GLES20.glCreateProgram()
-        GLES20.glAttachShader(mQuadProgram, vertexShader)
-        GLES20.glAttachShader(mQuadProgram, fragmentShader)
-        GLES20.glLinkProgram(mQuadProgram)
-        GLES20.glUseProgram(mQuadProgram)
+        quadProgram = GLES20.glCreateProgram()
+        GLES20.glAttachShader(quadProgram, vertexShader)
+        GLES20.glAttachShader(quadProgram, fragmentShader)
+        GLES20.glLinkProgram(quadProgram)
+        GLES20.glUseProgram(quadProgram)
 
         ShaderUtil.checkGLError(TAG, "Program creation")
 
-        mQuadPositionParam = GLES20.glGetAttribLocation(mQuadProgram, "a_Position")
-        mQuadTexCoordParam = GLES20.glGetAttribLocation(mQuadProgram, "a_TexCoord")
+        quadPositionParam = GLES20.glGetAttribLocation(quadProgram, "a_Position")
+        quadTexCoordParam = GLES20.glGetAttribLocation(quadProgram, "a_TexCoord")
 
         ShaderUtil.checkGLError(TAG, "Program parameters")
     }
@@ -118,25 +121,25 @@ class BackgroundRenderer {
 
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
 
-        GLES20.glUseProgram(mQuadProgram)
+        GLES20.glUseProgram(quadProgram)
 
         // Set the vertex positions.
         GLES20.glVertexAttribPointer(
-                mQuadPositionParam, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, quadVertices)
+                quadPositionParam, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, quadVertices)
 
         // Set the texture coordinates.
-        GLES20.glVertexAttribPointer(mQuadTexCoordParam, TEXCOORDS_PER_VERTEX,
+        GLES20.glVertexAttribPointer(quadTexCoordParam, TEXCOORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false, 0, quadTexCoordTransformed)
 
         // Enable vertex arrays
-        GLES20.glEnableVertexAttribArray(mQuadPositionParam)
-        GLES20.glEnableVertexAttribArray(mQuadTexCoordParam)
+        GLES20.glEnableVertexAttribArray(quadPositionParam)
+        GLES20.glEnableVertexAttribArray(quadTexCoordParam)
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 
         // Disable vertex arrays
-        GLES20.glDisableVertexAttribArray(mQuadPositionParam)
-        GLES20.glDisableVertexAttribArray(mQuadTexCoordParam)
+        GLES20.glDisableVertexAttribArray(quadPositionParam)
+        GLES20.glDisableVertexAttribArray(quadTexCoordParam)
 
         // Restore the depth state for further drawing.
         GLES20.glDepthMask(true)

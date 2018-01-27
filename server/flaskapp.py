@@ -3,7 +3,7 @@ app = Flask(__name__)
 import json
 from flask import request, jsonify, render_template
 
-# $ export FLASK_APP=app.py
+# $ export FLASK_APP=flaskapp.py
 # $ flask run
 
 @app.route("/")

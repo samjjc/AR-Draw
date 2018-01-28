@@ -9,7 +9,7 @@ android {
     buildToolsVersion "27.0.0"
     defaultConfig {
         applicationId "com.example.johnny.ar_thing"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"

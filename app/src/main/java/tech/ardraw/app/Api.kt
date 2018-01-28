@@ -1,6 +1,7 @@
 package tech.ardraw.app
 
 import io.reactivex.Observable
+import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -19,5 +20,5 @@ interface Api {
     fun searchDrawings(@Query("lat") latitude: Double, @Query("lon") longitude: Double): Observable<List<Drawing>>
 
     @POST("api/values")
-    fun addDrawing(@Body drawing: Drawing): Observable<Int>
+    fun addDrawing(@Body drawing: Drawing): Observable<ResponseBody>
 }

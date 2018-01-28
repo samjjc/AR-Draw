@@ -36,6 +36,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -175,11 +176,6 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
                 == PackageManager.PERMISSION_DENIED)
             ActivityCompat.requestPermissions(this,  arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION), 1)
 
-        // Allows the user to delete their current drawing
-        deleteButton.setOnClickListener {
-            currentStroke = null
-        }
-
         saveButton.setOnClickListener {
             if (currentStroke != null && location != null) {
                 val drawing = Drawing(location!!.longitude, location!!.latitude, 0.0, 0.0, 0xFFFFFF, Gson().toJson(currentStroke))
@@ -193,6 +189,12 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
                 Toast.makeText(this, "Location was invalid", Toast.LENGTH_LONG).show()
             }
         }
+
+        refreshButton.setOnClickListener {
+            allDrawings()
+        }
+
+        allDrawings()
     }
 
     @SuppressLint("SetTextI18n")
@@ -441,6 +443,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
     }
 
     fun allDrawings() {
+        progressBar.visibility = View.VISIBLE
         mSubscriptions.add(getApi().allDrawings()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -448,6 +451,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
     }
 
     fun searchDrawings(lat: Double, lon: Double) {
+        progressBar.visibility = View.VISIBLE
         mSubscriptions.add(getApi().searchDrawings(lat, lon)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -456,6 +460,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
 
     fun addDrawing(d: Drawing) {
+        progressBar.visibility = View.VISIBLE
         mSubscriptions.add(getApi().addDrawing(d)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -466,14 +471,20 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
     fun handleResponse(drawings: List<Drawing>) {
         strokes.clear()
         strokes.addAll(drawings.map{d -> d.getPoints()})
+
+        progressBar.visibility = View.GONE
     }
 
-    fun handleResponse(i :Int) {
+    fun handleResponse(i: ResponseBody) {
 //        handle data here
+        progressBar.visibility = View.GONE
+        Toast.makeText(this, "Saved drawing!", Toast.LENGTH_SHORT).show()
     }
 
     private fun handleError(throwable: Throwable) {
         Log.e("QWE", throwable.toString())
+        Toast.makeText(this, "Network Error", Toast.LENGTH_LONG).show()
+        progressBar.visibility = View.GONE
     }
 
     //making the retrofit object

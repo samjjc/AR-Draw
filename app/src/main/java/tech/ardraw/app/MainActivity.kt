@@ -102,6 +102,8 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
     private var location: Location? = null
 
+    private var drawDebug = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -194,6 +196,10 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
             allDrawings()
         }
 
+        debugDrawing.setOnCheckedChangeListener { _, isChecked ->
+                drawDebug = isChecked
+        }
+
         allDrawings()
     }
 
@@ -203,7 +209,6 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
         PositionHelpers.scheduleLocationUpdates(this, object : LocationListener {
             override fun onLocationChanged(location: Location?) {
-                this@MainActivity.locationText.text = "Latitude: ${location?.latitude}, Longitude: ${location?.longitude}"
 
                 if (location != null) {
                     searchDrawings(location.latitude, location.longitude)
@@ -218,7 +223,6 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         })
 
         location = PositionHelpers.getCurrentLocation(this)
-        this@MainActivity.locationText.text = "Latitude: ${location?.latitude}, Longitude: ${location?.longitude}"
 
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI)
@@ -350,11 +354,13 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
             backgroundRenderer.draw(frame)
 
-            val pointCloud = frame.acquirePointCloud()
-            pointCloudRenderer.update(pointCloud)
-            pointCloudRenderer.draw(viewMatrix, projectionMatrix)
+            if (drawDebug) {
+                val pointCloud = frame.acquirePointCloud()
+                pointCloudRenderer.update(pointCloud)
+                pointCloudRenderer.draw(viewMatrix, projectionMatrix)
 
-            pointCloud.release()
+                pointCloud.release()
+            }
 
             if (camera.trackingState == Trackable.TrackingState.TRACKING) {
                 lineShaderRenderer.draw(viewMatrix, projectionMatrix, screenWidth, screenHeight, 0.001f, 100.0f)
@@ -434,7 +440,6 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         val orientationAngles = FloatArray(3)
         SensorManager.getOrientation(rotationMatrix, orientationAngles)
 
-        bearing.text = "Bearing: ${Math.toDegrees(orientationAngles[0].toDouble())}"
     }
 
     override fun onDestroy() {
@@ -444,6 +449,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
     fun allDrawings() {
         progressBar.visibility = View.VISIBLE
+        debugDrawing.visibility = View.GONE
         mSubscriptions.add(getApi().allDrawings()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -452,6 +458,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
     fun searchDrawings(lat: Double, lon: Double) {
         progressBar.visibility = View.VISIBLE
+        debugDrawing.visibility = View.GONE
         mSubscriptions.add(getApi().searchDrawings(lat, lon)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -461,6 +468,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
     fun addDrawing(d: Drawing) {
         progressBar.visibility = View.VISIBLE
+        debugDrawing.visibility = View.GONE
         mSubscriptions.add(getApi().addDrawing(d)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -473,11 +481,13 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         strokes.addAll(drawings.map{d -> d.getPoints()})
 
         progressBar.visibility = View.GONE
+    debugDrawing.visibility = View.VISIBLE
     }
 
     fun handleResponse(i: ResponseBody) {
 //        handle data here
         progressBar.visibility = View.GONE
+        debugDrawing.visibility = View.VISIBLE
         Toast.makeText(this, "Saved drawing!", Toast.LENGTH_SHORT).show()
     }
 
@@ -485,6 +495,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         Log.e("QWE", throwable.toString())
         Toast.makeText(this, "Network Error", Toast.LENGTH_LONG).show()
         progressBar.visibility = View.GONE
+        debugDrawing.visibility = View.VISIBLE
     }
 
     //making the retrofit object

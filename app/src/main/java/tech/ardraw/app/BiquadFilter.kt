@@ -1,4 +1,4 @@
-package com.example.johnny.ar_thing
+package tech.ardraw.app
 
 import javax.vecmath.Vector3f
 

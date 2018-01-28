@@ -1,4 +1,4 @@
-package com.example.johnny.ar_thing
+package tech.ardraw.app
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

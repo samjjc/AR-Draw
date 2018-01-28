@@ -1,4 +1,4 @@
-package com.example.johnny.ar_thing.rendering
+package tech.ardraw.app.rendering
 
 import android.app.Activity
 import android.content.Context

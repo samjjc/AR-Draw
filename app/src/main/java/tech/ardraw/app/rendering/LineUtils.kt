@@ -1,7 +1,7 @@
-package com.example.johnny.ar_thing.rendering
+package tech.ardraw.app.rendering
 
 import android.opengl.Matrix
-import com.example.johnny.ar_thing.Ray
+import tech.ardraw.app.Ray
 import javax.vecmath.Vector2f
 import javax.vecmath.Vector3f
 

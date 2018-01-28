@@ -1,4 +1,4 @@
-package com.example.johnny.ar_thing
+package tech.ardraw.app
 
 import android.Manifest
 import android.content.Context

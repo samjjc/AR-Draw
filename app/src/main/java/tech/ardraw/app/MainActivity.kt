@@ -1,4 +1,4 @@
-package com.example.johnny.ar_thing
+package tech.ardraw.app
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -23,7 +23,6 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import com.example.johnny.ar_thing.rendering.*
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
 import com.google.ar.core.Session
@@ -38,6 +37,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import tech.ardraw.app.rendering.*
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10

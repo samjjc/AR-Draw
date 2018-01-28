@@ -1,10 +1,10 @@
-package com.example.johnny.ar_thing.rendering
+package tech.ardraw.app.rendering
 
 import android.content.Context
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
-import com.example.johnny.ar_thing.R
 import com.google.ar.core.Frame
+import tech.ardraw.app.R
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer

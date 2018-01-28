@@ -1,4 +1,4 @@
-package com.example.johnny.ar_thing
+package tech.ardraw.app
 
 import io.reactivex.Observable
 import retrofit2.http.Body

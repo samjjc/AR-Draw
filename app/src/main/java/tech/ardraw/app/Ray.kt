@@ -1,4 +1,4 @@
-package com.example.johnny.ar_thing
+package tech.ardraw.app
 
 import android.opengl.Matrix
 import javax.vecmath.Vector2f

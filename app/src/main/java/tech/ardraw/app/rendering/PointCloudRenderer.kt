@@ -1,11 +1,11 @@
-package com.example.johnny.ar_thing.rendering
+package tech.ardraw.app.rendering
 
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
-import com.example.johnny.ar_thing.R
 import com.google.ar.core.PointCloud
+import tech.ardraw.app.R
 
 
 /**

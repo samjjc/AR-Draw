@@ -34,7 +34,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -86,6 +85,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
     private val bNewStroke = AtomicBoolean(false)
 
     private var strokes: ArrayList<ArrayList<Vector3f>> = ArrayList()
+    private var currentStroke: ArrayList<Vector3f> = ArrayList()
 
     private val detector: GestureDetectorCompat by lazy { GestureDetectorCompat(this, this) }
 

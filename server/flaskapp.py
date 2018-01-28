@@ -1,32 +1,27 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from flask import Flask
+import pymysql
+import sys
+
+print(__name__)
+
 app = Flask(__name__)
-import json
-import os
-from flask import request, jsonify, render_template
 
-'''
-####### ENVIRONMENT VARIABLES #######
+db_name = 'ardraw_db'
+name = 'ardraw_user'
+password = ''
+rds_host = 'ardraw-db-instance.crr5w2xqdwfp.us-east-2.rds.amazonaws.com'
+port = 3306
 
-RDS_HOSTNAME – The hostname of the DB instance. ("Endpoint" in AWS)
-RDS_PORT – The port on which the DB instance accepts connections. The default value varies between DB engines. ("Port" in AWS)
-RDS_DB_NAME – The database name, ebdb. ("DB Name" on AWS)
-RDS_USERNAME – The user name that you configured for your database. ("Username" in AWS)
-RDS_PASSWORD – The password that you configured for your database.
-'''
-# $ export FLASK_APP=flaskapp.py
-# $ flask run
+try:
+    conn = pymysql.connect(rds_host, user=name, passwd=password, db=db_name, connect_timeout=5)
+except:
+    print("ERROR: Could not connect to database instance.")
+    sys.exit()
 
-if 'RDS_HOSTNAME' in os.environ:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.environ['RDS_DB_NAME'],
-            'USER': os.environ['RDS_USERNAME'],
-            'PASSWORD': os.environ['RDS_PASSWORD'],
-            'HOST': os.environ['RDS_HOSTNAME'],
-            'PORT': os.environ['RDS_PORT'],
-        }
-    }
+
 
 @app.route("/")
 def hello():

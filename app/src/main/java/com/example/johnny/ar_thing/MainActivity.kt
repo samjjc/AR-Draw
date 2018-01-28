@@ -411,6 +411,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
 //    display drawings
     fun handleResponse(drawings: List<Drawing>) {
+
 //        handle data here
     }
 
@@ -428,7 +429,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         val rxAdapter = RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io())
 
         return Retrofit.Builder()
-                .baseUrl("some-url")
+                .baseUrl("http://ec2-18-216-47-242.us-east-2.compute.amazonaws.com/")
                 .addCallAdapterFactory(rxAdapter)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build().create(Api::class.java)

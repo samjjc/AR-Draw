@@ -12,12 +12,12 @@ import retrofit2.http.Query
  */
 interface Api {
 
-    @GET("endpoint")
+    @GET("api/values")
     fun allDrawings(): Observable<List<Drawing>>
 
-    @GET("endpoint")
+    @GET("api/values")
     fun searchDrawings(@Query("lat") latitude: Double, @Query("lon") longitude: Double): Observable<List<Drawing>>
 
-    @POST("endpoint")
+    @POST("api/values")
     fun addDrawing(@Body drawing: Drawing): Observable<Int>
 }

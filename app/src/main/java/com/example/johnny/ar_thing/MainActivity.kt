@@ -42,7 +42,7 @@ import javax.vecmath.Vector2f
 import javax.vecmath.Vector3f
 
 
-class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventListener {
+class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventListener, GestureDetector.OnGestureListener {
     private val TAG = MainActivity::class.java.simpleName
 
     private var session: Session? = null

@@ -13,8 +13,8 @@ import retrofit2.http.Query
 interface Api {
 
     @GET("endpoint")
-    fun searchDrawings(@Query("q") query: String): Flowable<Int>
+    fun searchDrawings(@Query("q") query: String): Flowable<List<Drawing>>
 
     @POST("endpoint")
-    fun AddDrawing(@Query("id") placeId: String): Observable<List<Int>>
+    fun AddDrawing(): Observable<Drawing>
 }

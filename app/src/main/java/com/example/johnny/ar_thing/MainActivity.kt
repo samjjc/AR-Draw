@@ -88,20 +88,20 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer {
         super.onDestroy()
     }
 
-    fun getStrings() {
-        mSubscriptions.add(getApi().searchDrawings("s")
+    fun getDrawing(d: Drawing) {
+        mSubscriptions.add(getApi().AddDrawing()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleResponse,this::handleError))
     }
 
 
-    fun handleResponse(i :Int) {
-
+    fun handleResponse(d :Drawing) {
+//        handle data here
     }
 
     private fun handleError(throwable: Throwable) {
-        Log.e("ee", throwable.toString())
+        Log.e("QWE", throwable.toString())
     }
 
     //making the retrofit object

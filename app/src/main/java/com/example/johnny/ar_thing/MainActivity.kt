@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
     private val bNewStroke = AtomicBoolean(false)
 
     private var strokes: ArrayList<ArrayList<Vector3f>> = ArrayList()
-    private var currentStroke: ArrayList<Vector3f> = ArrayList()
+    private lateinit var currentStroke: Drawing
 
     private val detector: GestureDetectorCompat by lazy { GestureDetectorCompat(this, this) }
 
@@ -379,7 +379,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         val orientationAngles = FloatArray(3)
         SensorManager.getOrientation(rotationMatrix, orientationAngles)
 
-        bearing.text = "Bearing: ${Math.toDegrees(orientationAngles[0].toDouble())}"
+        bearing.text = "Bearing:\n ${Math.toDegrees(orientationAngles[0].toDouble())} \n ${Math.toDegrees(orientationAngles[1].toDouble())} \n ${Math.toDegrees(orientationAngles[2].toDouble())}"
     }
 
     override fun onDestroy() {
@@ -388,10 +388,10 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
     }
 
     fun getDrawing(d: Drawing) {
-        mSubscriptions.add(getApi().AddDrawing()
+        mSubscriptions.add(getApi().addDrawing(Drawing(0.0, 0.0, 0.0, 0.0, 0, ""))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::handleResponse,this::handleError))
+                .subscribe({},{}))
     }
 
 

@@ -84,7 +84,7 @@ class LineShaderRenderer {
     private var mLineDepthScaleUniform: Int = 0
     private var mLineDepthScale = 10.0f
 
-    var mDrawDistance: Float = 0.toFloat()
+    var mDrawDistance: Float = 0f
 
     /**
      * Allocates and initializes OpenGL resources needed by the Line renderer.  Must be
@@ -223,10 +223,7 @@ class LineShaderRenderer {
      * contains the strokes, while the inner ArrayList contains the Vertex of each Line
      */
     fun updateStrokes(strokes: ArrayList<ArrayList<Vector3f>>) {
-        mNumPoints = 0
-        for (l in strokes) {
-            mNumPoints += l.size * 2 + 2
-        }
+        mNumPoints = strokes.sumBy { it.size * 2 + 2 }
 
         ensureCapacity(mNumPoints)
 
@@ -235,7 +232,6 @@ class LineShaderRenderer {
             offset = addLine(l, offset)
         }
         mNumBytes = offset
-
     }
 
     /**
@@ -272,7 +268,7 @@ class LineShaderRenderer {
      * @param offset
      * @return
      */
-    private fun addLine(line: List<Vector3f>?, offset: Int): Int {
+    private fun addLine(line: ArrayList<Vector3f>?, offset: Int): Int {
         if (line == null || line.size < 2)
             return offset
 

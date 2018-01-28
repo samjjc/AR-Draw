@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask
-import json
-import os
-from flask import request, jsonify, render_template
 import pymysql
 import sys
+
+print(__name__)
 
 app = Flask(__name__)
 
@@ -17,10 +16,10 @@ rds_host = 'ardraw-db-instance.crr5w2xqdwfp.us-east-2.rds.amazonaws.com'
 port = 3306
 
 try:
-	conn = pymysql.connect(rds_host, user=name, passwd=password, db=db_name, connect_timeout=5)
+    conn = pymysql.connect(rds_host, user=name, passwd=password, db=db_name, connect_timeout=5)
 except:
-	print("ERROR: Could not connect to database instance.")
-	sys.exit()
+    print("ERROR: Could not connect to database instance.")
+    sys.exit()
 
 
 

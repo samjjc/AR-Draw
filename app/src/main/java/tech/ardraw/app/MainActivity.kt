@@ -23,6 +23,7 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
 import com.google.ar.core.Session
@@ -30,6 +31,7 @@ import com.google.ar.core.Trackable
 import com.google.ar.core.exceptions.UnavailableApkTooOldException
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException
+import com.google.gson.Gson
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -97,6 +99,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
     private lateinit var frame: Frame
 
+    private var location: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -178,7 +181,17 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         }
 
         saveButton.setOnClickListener {
-            // TODO: Upload to server
+            if (currentStroke != null && location != null) {
+                val drawing = Drawing(location!!.longitude, location!!.latitude, 0.0, 0.0, 0xFFFFFF, Gson().toJson(currentStroke))
+                addDrawing(drawing)
+
+                strokes.add(currentStroke!!)
+                currentStroke = null
+            } else if (currentStroke == null) {
+                Toast.makeText(this, "You need to draw something first!", Toast.LENGTH_LONG).show()
+            } else if (location == null) {
+                Toast.makeText(this, "Location was invalid", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -188,7 +201,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
         PositionHelpers.scheduleLocationUpdates(this, object : LocationListener {
             override fun onLocationChanged(location: Location?) {
-                this@MainActivity.location.text = "Latitude: ${location?.latitude}, Longitude: ${location?.longitude}"
+                this@MainActivity.locationText.text = "Latitude: ${location?.latitude}, Longitude: ${location?.longitude}"
 
                 if (location != null) {
                     searchDrawings(location.latitude, location.longitude)
@@ -202,14 +215,15 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
             override fun onProviderDisabled(provider: String?) {}
         })
 
-        val location = PositionHelpers.getCurrentLocation(this)
-        this@MainActivity.location.text = "Latitude: ${location?.latitude}, Longitude: ${location?.longitude}"
+        location = PositionHelpers.getCurrentLocation(this)
+        this@MainActivity.locationText.text = "Latitude: ${location?.latitude}, Longitude: ${location?.longitude}"
 
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI)
 
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
                 SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI)
+
     }
 
     override fun onResume() {

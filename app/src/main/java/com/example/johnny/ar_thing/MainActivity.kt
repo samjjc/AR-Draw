@@ -34,7 +34,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -86,6 +85,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
     private val bNewStroke = AtomicBoolean(false)
 
     private var strokes: ArrayList<ArrayList<Vector3f>> = ArrayList()
+    private lateinit var currentStroke: Drawing
 
     private val detector: GestureDetectorCompat by lazy { GestureDetectorCompat(this, this) }
 
@@ -387,15 +387,34 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         super.onDestroy()
     }
 
-    fun addDrawing(d: Drawing) {
-        mSubscriptions.add(getApi().AddDrawing(d)
+    fun allDrawings() {
+        mSubscriptions.add(getApi().allDrawings()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleResponse,this::handleError))
+    }
+
+    fun searchDrawings(lat: Double, lon: Double) {
+        mSubscriptions.add(getApi().searchDrawings(lat, lon)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleResponse,this::handleError))
     }
 
 
-    fun handleResponse(d :Drawing) {
+    fun addDrawing(d: Drawing) {
+        mSubscriptions.add(getApi().addDrawing(d)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleResponse,this::handleError))
+    }
+
+//    display drawings
+    fun handleResponse(drawings: List<Drawing>) {
+//        handle data here
+    }
+
+    fun handleResponse(i :Int) {
 //        handle data here
     }
 

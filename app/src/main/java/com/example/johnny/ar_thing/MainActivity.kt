@@ -101,6 +101,8 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         setContentView(R.layout.activity_main)
         displayRotationHelper = DisplayRotationHelper(this)
 
+        mSubscriptions = CompositeDisposable()
+
         // Initialize GLSurfaceView
         with (surface) {
             preserveEGLContextOnPause = true
@@ -148,6 +150,8 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         }
 
         session?.configure(config)
+
+        allDrawings()
 
         if (ContextCompat.checkSelfPermission(this.applicationContext, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_DENIED)

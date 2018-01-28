@@ -1,6 +1,8 @@
 package com.example.johnny.ar_thing
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -11,6 +13,8 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.DisplayMetrics
@@ -144,6 +148,10 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         }
 
         session?.configure(config)
+
+        if (ContextCompat.checkSelfPermission(this.applicationContext, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED)
+            ActivityCompat.requestPermissions(this,  arrayOf(Manifest.permission.CAMERA), 1);
     }
 
     @SuppressLint("SetTextI18n")
@@ -411,8 +419,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
 //    display drawings
     fun handleResponse(drawings: List<Drawing>) {
-
-//        handle data here
+        strokes.addAll(drawings.map{d -> d.getPoints()})
     }
 
     fun handleResponse(i :Int) {

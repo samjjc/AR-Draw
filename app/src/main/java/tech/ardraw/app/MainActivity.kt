@@ -89,7 +89,9 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
     private val bNewStroke = AtomicBoolean(false)
 
     private var strokes: ArrayList<ArrayList<Vector3f>> = ArrayList()
-    private lateinit var currentStroke: Drawing
+
+    // The *current* stoke being drawn. If the user presses save, this is the stroke that is saved.
+    private var currentStroke: ArrayList<Vector3f>? = null
 
     private val detector: GestureDetectorCompat by lazy { GestureDetectorCompat(this, this) }
 
@@ -156,7 +158,16 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_DENIED || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_DENIED)
-            ActivityCompat.requestPermissions(this,  arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION), 1);
+            ActivityCompat.requestPermissions(this,  arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION), 1)
+
+        // Allows the user to delete their current drawing
+        deleteButton.setOnClickListener {
+            currentStroke = null
+        }
+
+        saveButton.setOnClickListener {
+            // TODO: Upload to server
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -166,6 +177,10 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         PositionHelpers.scheduleLocationUpdates(this, object : LocationListener {
             override fun onLocationChanged(location: Location?) {
                 this@MainActivity.location.text = "Latitude: ${location?.latitude}, Longitude: ${location?.longitude}"
+
+                if (location != null) {
+                    searchDrawings(location.latitude, location.longitude)
+                }
             }
 
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
@@ -301,7 +316,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
                 lineShaderRenderer.setDistanceScale(mDistanceScale)
                 lineShaderRenderer.setLineWidth(mLineWidthMax)
                 lineShaderRenderer.clear()
-                lineShaderRenderer.updateStrokes(strokes)
+                lineShaderRenderer.updateStrokes(ArrayList(strokes).also { it.add(currentStroke) })
                 lineShaderRenderer.upload()
             }
 
@@ -423,6 +438,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
 //    display drawings
     fun handleResponse(drawings: List<Drawing>) {
+        strokes.clear()
         strokes.addAll(drawings.map{d -> d.getPoints()})
     }
 
@@ -478,8 +494,11 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         }
         val p = biquadFilter.update(newPoint)
         mLastPoint = Vector3f(p)
-        strokes.add(ArrayList())
-        strokes[strokes.size - 1].add(mLastPoint)
+        currentStroke = ArrayList()
+        currentStroke?.add(mLastPoint)
+
+        /*strokes.add(ArrayList())
+        strokes[strokes.size - 1].add(mLastPoint)*/
     }
 
     /**
@@ -491,7 +510,9 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         if (LineUtils.distanceCheck(newPoint, mLastPoint)) {
             val p = biquadFilter.update(newPoint)
             mLastPoint = Vector3f(p)
-            strokes[strokes.size - 1].add(mLastPoint)
+
+            currentStroke?.add(mLastPoint)
+            //strokes[strokes.size - 1].add(mLastPoint)
         }
     }
 

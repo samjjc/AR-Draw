@@ -153,9 +153,10 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
 
         allDrawings()
 
-        if (ContextCompat.checkSelfPermission(this.applicationContext, Manifest.permission.CAMERA)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_DENIED)
-            ActivityCompat.requestPermissions(this,  arrayOf(Manifest.permission.CAMERA), 1);
+            ActivityCompat.requestPermissions(this,  arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION), 1);
     }
 
     @SuppressLint("SetTextI18n")

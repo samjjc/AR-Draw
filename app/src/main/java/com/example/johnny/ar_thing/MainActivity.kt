@@ -288,6 +288,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
                     lineShaderRenderer.bNeedsUpdate.set(true)
                 }
             }
+            
             lineShaderRenderer.setDrawDebug(bLineParameters.get())
             if (lineShaderRenderer.bNeedsUpdate.get()) {
                 lineShaderRenderer.setColor(Vector3f(255f, 255f, 255f))
@@ -298,8 +299,6 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
                 lineShaderRenderer.updateStrokes(strokes)
                 lineShaderRenderer.upload()
             }
-
-
 
             backgroundRenderer.draw(frame)
 

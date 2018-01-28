@@ -387,8 +387,8 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         super.onDestroy()
     }
 
-    fun getDrawing(d: Drawing) {
-        mSubscriptions.add(getApi().AddDrawing()
+    fun addDrawing(d: Drawing) {
+        mSubscriptions.add(getApi().AddDrawing(d)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleResponse,this::handleError))

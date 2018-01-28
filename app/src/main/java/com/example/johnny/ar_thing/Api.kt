@@ -3,6 +3,7 @@ package com.example.johnny.ar_thing
 import retrofit2.http.GET
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -16,5 +17,5 @@ interface Api {
     fun searchDrawings(@Query("q") query: String): Flowable<List<Drawing>>
 
     @POST("endpoint")
-    fun AddDrawing(): Observable<Drawing>
+    fun AddDrawing(@Body drawing: Drawing): Observable<Drawing>
 }

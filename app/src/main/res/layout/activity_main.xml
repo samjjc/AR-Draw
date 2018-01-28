@@ -54,42 +54,51 @@
         app:layout_constraintTop_toBottomOf="@id/location"
         app:layout_constraintVertical_bias="0.0" />
 
+    <FrameLayout
+        android:id="@+id/background"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="#80000000"/>
+
     <Button
         android:id="@+id/saveButton"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
+        android:shadowColor="#000000"
+        android:shadowDx="1.5"
+        android:shadowDy="1.3"
+        android:shadowRadius="1.6"
         android:text="Save"
         android:textColor="?android:attr/textColorPrimaryInverse"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:shadowColor="#000000"
-        android:shadowDx="1.5"
-        android:shadowDy="1.3"
-        android:shadowRadius="1.6" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/deleteButton"
         style="@style/Widget.AppCompat.ImageButton"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:background="@android:color/transparent"
-        android:contentDescription="delete drawing"
-        android:src="@drawable/ic_delete_black_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:tint="?android:attr/textColorPrimaryInverse"
         android:clickable="true"
+        android:contentDescription="delete drawing"
         android:focusable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:shadowColor="#000000"
         android:shadowDx="1.5"
         android:shadowDy="1.3"
-        android:shadowRadius="1.6"/>
+        android:shadowRadius="1.6"
+        android:src="@drawable/ic_delete_black_24dp"
+        android:tint="?android:attr/textColorPrimaryInverse"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

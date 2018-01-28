@@ -140,8 +140,20 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
         // Reset the zero matrix
         Matrix.setIdentityM(zeroMatrix, 0)
 
-        surface.setOnTouchListener { _, event ->
-            surfaceTouched(event)
+        surface.setOnTouchListener { _, tap ->
+            this.detector.onTouchEvent(tap)
+
+            if (tap.action == MotionEvent.ACTION_DOWN) {
+                lastTouch.set(tap.x, tap.y)
+                bTouchDown.set(true)
+                bNewStroke.set(true)
+            } else if (tap.action == MotionEvent.ACTION_MOVE) {
+                lastTouch.set(tap.x, tap.y)
+                bTouchDown.set(true)
+            } else if (tap.action == MotionEvent.ACTION_UP) {
+                bTouchDown.set(false)
+                lastTouch.set(tap.x, tap.y)
+            }
 
             true
         }
@@ -521,22 +533,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer, SensorEventLis
      * AtomicBooleans to trigger addPoint and addStroke on the GL Thread to be called
      */
     override fun onTouchEvent(tap: MotionEvent): Boolean {
-        this.detector.onTouchEvent(tap)
 
-        if (tap.action == MotionEvent.ACTION_DOWN) {
-            lastTouch.set(tap.x, tap.y)
-            bTouchDown.set(true)
-            bNewStroke.set(true)
-            return true
-        } else if (tap.action == MotionEvent.ACTION_MOVE) {
-            lastTouch.set(tap.x, tap.y)
-            bTouchDown.set(true)
-            return true
-        } else if (tap.action == MotionEvent.ACTION_UP) {
-            bTouchDown.set(false)
-            lastTouch.set(tap.x, tap.y)
-            return true
-        }
 
         return super.onTouchEvent(tap)
     }
